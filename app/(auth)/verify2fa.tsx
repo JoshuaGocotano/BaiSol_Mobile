@@ -68,12 +68,10 @@ const VerifyAccount = () => {
     OTPConfirmation.mutateAsync(
       { code: otp.join("").toString(), email: email! },
       {
-        onSuccess: (data) => {
-          Toast.show({ type: "error", text1: data });
+        onSuccess: () => {
+          Toast.show({ type: "success", text1: "Logged in successfully!" });
 
-          router.push({
-            pathname: "/(tabs)/home",
-          });
+        
         },
       }
     );

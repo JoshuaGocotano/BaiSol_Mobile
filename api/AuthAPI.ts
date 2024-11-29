@@ -5,6 +5,7 @@ import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { setUser } from "@/redux/authSlice";
+import { router } from "expo-router";
 
 const apiURL = process.env.EXPO_PUBLIC_SERVER_API_URL;
 
@@ -46,39 +47,6 @@ export const useLoginMutation = () => {
       return response.data;
     },
     onSuccess: async (res) => {
-      if (res.isDefaultAdmin && res.flag) {
-        // Extract and store tokens
-        const { accessToken, refreshToken } = res;
-        if (accessToken && refreshToken) {
-          await AsyncStorage.setItem("accessToken", accessToken);
-          await AsyncStorage.setItem("refreshToken", refreshToken);
-
-          // Decode the access token to extract user information
-          const decodedToken: any = jwtDecode(accessToken);
-          const user = {
-            userId:
-              decodedToken[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-              ],
-            email:
-              decodedToken[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-              ],
-            userName:
-              decodedToken[
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-              ],
-            userRole:
-              decodedToken[
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-              ],
-          };
-
-          // Dispatch the user information to the Redux store
-          dispatch(setUser(user));
-        }
-      }
-
       // Show success message
       Toast.show({ type: "success", text1: res.message });
     },
@@ -97,29 +65,46 @@ export const use2FAMutation = () => {
       return response.data;
     },
     onSuccess: async (res) => {
-      const accessToken = res.accessToken;
-      const refreshToken = res.refreshToken;
-      await AsyncStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      const decoded: any = jwtDecode(accessToken);
-      const user = {
-        userId:
-          decoded[
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-          ],
-        email:
-          decoded[
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-          ],
-        userName:
-          decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        userRole:
-          decoded[
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-          ],
-      };
+      const { accessToken, refreshToken } = res;
+      if (accessToken && refreshToken) {
+        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
 
-      dispatch(setUser(user));
+        // Decode the access token to extract user information
+        const decodedToken: any = jwtDecode(accessToken);
+        const user = {
+          userId:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            ],
+          email:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+            ],
+          userName:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+            ],
+          userRole:
+            decodedToken[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ],
+        };
+
+        // Dispatch the user information to the Redux store
+        dispatch(setUser(user));
+
+        if (user.userRole == "Facilitator") {
+          router.push({
+            pathname: "/(facilitator)/facilitator-home",
+          });
+        }
+        if (user.userRole == "Client") {
+          router.push({
+            pathname: "/(client)/client-home",
+          });
+        }
+      }
     },
     onError: (err: any) => {
       Toast.show({ type: "error", text1: err?.response.data?.message });

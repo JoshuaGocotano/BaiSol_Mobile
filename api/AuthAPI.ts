@@ -4,8 +4,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { setUser } from "@/redux/authSlice";
+import { clearUser, setUser } from "@/redux/authSlice";
 import { router } from "expo-router";
+import { useAuth } from "@/app/auth-context";
 
 const apiURL = process.env.EXPO_PUBLIC_SERVER_API_URL;
 
@@ -113,6 +114,8 @@ export const use2FAMutation = () => {
 };
 
 export const useLogOut = () => {
+  const dispatch = useDispatch();
+  const { setEmail } = useAuth();
   return useMutation({
     mutationFn: async (email: string) => {
       const response = await api.post(`auth/Auth/LogOut?email=${email}`, {
@@ -122,8 +125,14 @@ export const useLogOut = () => {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      dispatch(clearUser());
+      await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("refreshToken");
+      setEmail(null);
+      
       Toast.show({ type: "success", text1: data });
+      router.push("/(auth)/log-in");
     },
     onError: (err: any) => {
       Toast.show({ type: "error", text1: err.data.message });

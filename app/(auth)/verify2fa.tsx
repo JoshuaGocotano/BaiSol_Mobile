@@ -16,13 +16,15 @@ import Toast from "react-native-toast-message";
 import { useAuth } from "../auth-context";
 
 import { router } from "expo-router";
+import { use2FAMutation } from "@/api/AuthAPI";
 
 const VerifyAccount = () => {
   const { email } = useAuth();
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputsRef = useRef<(TextInput | null)[]>([]); // Store references to the inputs
+
+  const OTPConfirmation = use2FAMutation();
 
   const handleInputChange = (value: string, index: number) => {
     if (/^[0-9]$/.test(value)) {
@@ -60,24 +62,19 @@ const VerifyAccount = () => {
         type: "warning",
         position: "top",
       });
-      setIsSubmitting(false);
-      return;
-    } else {
-      Toast.show({
-        text1: "Login Success",
-        text2: "Proceeding to BaiSol",
-        type: "success",
-        position: "top",
-      });
-      setIsSubmitting(true);
-      setTimeout(() => {
-        setIsSubmitting(false);
-        router.push({
-          pathname: "/(tabs)/home",
-        });
-      }, 1000);
       return;
     }
+
+    OTPConfirmation.mutateAsync(
+      { code: otp.join("").toString(), email: email! },
+      {
+        onSuccess: () => {
+          Toast.show({ type: "success", text1: "Logged in successfully!" });
+
+        
+        },
+      }
+    );
   };
 
   return (
@@ -117,7 +114,7 @@ const VerifyAccount = () => {
             title="Submit"
             handlePress={handleSubmit}
             containerStyles="mt-7"
-            isLoading={isSubmitting}
+            isLoading={OTPConfirmation.isPending}
           />
         </View>
       </ScrollView>

@@ -14,15 +14,16 @@ import CustomButton from "../../components/CustomButton";
 import { Link, router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../auth-context";
+import { useForgotPasswordMutation } from "@/api/AuthAPI";
 
 const ForgotPass = () => {
   const [form, setForm] = useState({
     email: "",
   });
 
+  const forgotPass = useForgotPasswordMutation();
   const { setEmail } = useAuth();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailError, setEmailError] = useState("");
 
   const validateEmail = (email: string) => {
@@ -33,27 +34,31 @@ const ForgotPass = () => {
   const submit = () => {
     if (!validateEmail(form.email)) {
       setEmailError("Please enter a valid email.");
-      setIsSubmitting(false);
     } else {
       setEmailError("");
 
       setEmail(form.email);
-      setIsSubmitting(true);
-
-      Toast.show({
-        text1: "Check your email",
-        text2: "A link is sent in your email for resetting your password.",
-        type: "success",
-        position: "top",
+      forgotPass.mutateAsync(form.email, {
+        onSuccess: (data) => {
+          Toast.show({
+            text1: "Check your email",
+            text2: data,
+            type: "success",
+            position: "top",
+          });
+          router.push({
+            pathname: "/log-in",
+          });
+        },
+        onError: () => {
+          Toast.show({
+            text1: "Invalid email!",
+            text2: "Couldn't send link to email, please try again.",
+            type: "error",
+            position: "top",
+          });
+        },
       });
-
-      setTimeout(() => {
-        setIsSubmitting(false);
-
-        router.push({
-          pathname: "/change-pass",
-        });
-      }, 3000);
     }
   };
 
@@ -84,7 +89,7 @@ const ForgotPass = () => {
             title="Confirm"
             handlePress={submit}
             containerStyles="mt-7"
-            isLoading={isSubmitting}
+            isLoading={forgotPass.isPending}
           />
         </View>
       </ScrollView>

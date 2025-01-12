@@ -53,7 +53,7 @@ const LogIn = () => {
       { email: form.email, password: form.password },
       {
         onSuccess: (data) => {
-          router.push({ pathname: "/verify2fa" });
+          // router.push({ pathname: "/verify2fa" });
           setEmail(form.email);
         },
       }

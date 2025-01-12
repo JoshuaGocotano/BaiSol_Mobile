@@ -48,6 +48,49 @@ export const useLoginMutation = () => {
       return response.data;
     },
     onSuccess: async (res) => {
+
+      
+      const { accessToken, refreshToken } = res;
+      if (accessToken && refreshToken) {
+        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+
+        // Decode the access token to extract user information
+        const decodedToken: any = jwtDecode(accessToken);
+        const user = {
+          userId:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            ],
+          email:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+            ],
+          userName:
+            decodedToken[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+            ],
+          userRole:
+            decodedToken[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ],
+        };
+
+        // Dispatch the user information to the Redux store
+        dispatch(setUser(user));
+
+        if (user.userRole == "Facilitator") {
+          router.push({
+            pathname: "/(facilitator)/facilitator-home",
+          });
+        }
+        if (user.userRole == "Client") {
+          router.push({
+            pathname: "/(client)/client-home",
+          });
+        }
+      }
+
       // Show success message
       Toast.show({ type: "success", text1: res.message });
     },

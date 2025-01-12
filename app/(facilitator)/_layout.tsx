@@ -38,7 +38,7 @@ const FacilitatorLayout = () => {
         };
         dispatch(setUser(user));
       } else {
-        router.push("/log-in")
+        router.push("/log-in");
       }
     };
     validateAndSetUser();

@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  id: any;
   name: string;
   age: number;
   gender: "Male" | "Female";
@@ -38,7 +38,7 @@ export const users: User[] = [
     gender: "Female",
     role: "Customer",
     address: "456 Elm St, Riverside",
-    email: "gecole.angelie@gmail.com",
+    email: "angeleajeasgecole@gmail.com",
     status: "Active",
   },
   {
@@ -88,18 +88,18 @@ export const projects: Project[] = [
     projectId: 101,
     name: "Springfield Park",
     description: "Renovation of the central park in Springfield, adding a hybrid solar system",
-    customerId: 2,  // Angelie Gecole
-    facilitatorId: 1,  // Joshua Gocotano
+    customerId: 2, // Angelie Gecole
+    facilitatorId: 1, // Joshua Gocotano
     startDate: "2024-11-01",
-    endDate: "2025-05-01",
+    endDate: "2025-01-28",
     status: "On-Going",
   },
   {
     projectId: 102,
     name: "Greenville Expansion",
     description: "Expanding the Greenville solar energy system to save more",
-    customerId: 4,  // Emily Johnson
-    facilitatorId: 3,  // Michael Brown
+    customerId: 4, // Emily Johnson
+    facilitatorId: 3, // Michael Brown
     startDate: "2024-12-15",
     endDate: "2025-06-30",
     status: "On-Going",
@@ -108,8 +108,8 @@ export const projects: Project[] = [
     projectId: 103,
     name: "Lakeview Community Center",
     description: "Construction of a new community center in Lakeview with an Off-Grid solar system",
-    customerId: 5,  // Sarah Williams
-    facilitatorId: 1,  // Joshua Gocotano
+    customerId: 5, // Sarah Williams
+    facilitatorId: 1, // Joshua Gocotano
     startDate: "2024-01-10",
     endDate: "2024-02-22",
     status: "Completed",
@@ -118,8 +118,8 @@ export const projects: Project[] = [
     projectId: 104,
     name: "Cebu Landers Superstore",
     description: "Putting a HYBRID solar system for the superstore in Cebu",
-    customerId: 6,  // Roboam Dosdos
-    facilitatorId: 1,  // Joshua Gocotano
+    customerId: 6, // Roboam Dosdos
+    facilitatorId: 1, // Joshua Gocotano
     startDate: "2024-02-26",
     endDate: "2024-03-10",
     status: "Completed",

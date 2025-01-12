@@ -48,8 +48,6 @@ export const useLoginMutation = () => {
       return response.data;
     },
     onSuccess: async (res) => {
-
-      
       const { accessToken, refreshToken } = res;
       if (accessToken && refreshToken) {
         await AsyncStorage.setItem("accessToken", accessToken);

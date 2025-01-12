@@ -1,59 +1,85 @@
-import React, { useEffect } from "react";
-import { router, Stack } from "expo-router";
-import { useDispatch } from "react-redux";
-import { validateToken } from "@/api/TokenValidation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { jwtDecode } from "jwt-decode";
-import { setUser } from "@/redux/authSlice";
+import { View, Text, Image } from "react-native";
+import { Tabs } from "expo-router";
+import { icons } from "../../constants";
+import { useColorScheme } from "react-native";
+import { users } from "../../constants/SampleData";
+import { useAuth } from "../auth-context";
 
-const FacilitatorLayout = () => {
-  const dispatch = useDispatch();
+interface TabIconProps {
+  icon: any;
+  color: string;
+  name: string;
+  focused: boolean;
+}
 
-  useEffect(() => {
-    const validateAndSetUser = async () => {
-      const isValidToken = await validateToken();
-      if (isValidToken) {
-        const accessToken = await AsyncStorage.getItem("accessToken");
+const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => (
+  <View
+    className="items-center justify-center gap-2"
+    style={{ width: 100, paddingTop: 30 }}
+  >
+    <Image
+      source={icon}
+      resizeMode="contain"
+      style={{ tintColor: color }}
+      className="w-6 h-6"
+    />
+    <Text
+      style={{
+        fontFamily: focused ? "Poppins-SemiBold" : "Poppins-Regular",
+        color: color,
+      }}
+      className="text-xs"
+    >
+      {name}
+    </Text>
+  </View>
+);
 
-        if (!accessToken) return;
+const TabsLayout: React.FC = () => {
+  const colorScheme = useColorScheme();
+  const isLightMode = colorScheme === "light";
 
-        const decoded: any = jwtDecode(accessToken);
-        const user = {
-          userId:
-            decoded[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            ],
-          email:
-            decoded[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-            ],
-          userName:
-            decoded[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-            ],
-          userRole:
-            decoded[
-              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-            ],
-        };
-        dispatch(setUser(user));
-      } else {
-        router.push("/log-in");
-      }
-    };
-    validateAndSetUser();
-  }, [dispatch, router]);
+  const tabs = [
+    { name: "facilitator-home", title: "Home", icon: icons.home },
+    { name: "reports", title: "Reports", icon: icons.reports },
+    { name: "supply", title: "Supply", icon: icons.supply },
+  ];
 
   return (
-    <>
-      <Stack>
-        <Stack.Screen
-          name="facilitator-home"
-          options={{ headerShown: false }}
+    <Tabs
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: "#FF9C01",
+        tabBarInactiveTintColor: isLightMode ? "#666666" : "#CDCDE0",
+        tabBarStyle: {
+          backgroundColor: isLightMode ? "#FFFFFF" : "#161622",
+          borderTopWidth: 1,
+          borderTopColor: isLightMode ? "#E0E0E0" : "#232533",
+          height: 84,
+          justifyContent: "center",
+        },
+      }}
+    >
+      {tabs.map(({ name, title, icon }) => (
+        <Tabs.Screen
+          key={name}
+          name={name}
+          options={{
+            title,
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icon}
+                color={color}
+                name={title}
+                focused={focused}
+              />
+            ),
+          }}
         />
-      </Stack>
-    </>
+      ))}
+    </Tabs>
   );
 };
 
-export default FacilitatorLayout;
+export default TabsLayout;

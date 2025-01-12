@@ -14,8 +14,10 @@ import play from "../assets/icons/play.png";
 import reports from "../assets/icons/reports.png";
 import supply from "../assets/icons/supply.png";
 import customers from "../assets/icons/customers.png";
+// import quotation from "../assets/icons/quotation.png";
 
 export default {
+  // quotation,
   customers,
   supply,
   reports,

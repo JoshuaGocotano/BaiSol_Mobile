@@ -29,20 +29,19 @@ export interface ITask {
   taskList: ITaskItem[];
 }
 
-export const getTaskToUpdateProgress = () => {
-  const { data: client, isLoading } = getClientProjId();
-  if (isLoading) return { isLoading: true };
-
+export const getTaskToUpdateProgress = (projId: string) => {
   return useQuery<ITask[], Error>({
-    queryKey: ["facilitator-task-to-update", client?.projId],
+    queryKey: ["facilitator-task-to-update", projId],
     queryFn: async () => {
       const response = await api.get("api/Gantt/TaskToUpdateProgress", {
-        params: { projId: client?.projId },
+        params: { projId },
       });
       return response.data;
     },
   });
 };
+
+
 
 export interface IProjectDateInto {
   startDate: string;
@@ -98,3 +97,5 @@ export const useUpdateTaskProgress = () => {
     },
   });
 };
+
+

@@ -105,8 +105,8 @@ export const Projects = [
     vatRate: "12",
     total: "7056",
     estimationDate: 30,
-    totalMaterialCost: { description: "Total Materials", lineTotal: "5000" },
-    totalLaborCost: { description: "Total Labor", lineTotal: "2000" },
+    totalMaterialCost: { description: "Total Material Cost", lineTotal: "5000" },
+    totalLaborCost: { description: "Total Labor and Installation Cost", lineTotal: "2000" },
   };
   
   // Mock data for project info
@@ -116,7 +116,7 @@ export const Projects = [
     customerEmail: "angeleajeasgecole@gmail.com",
     customerAddress: "456 Elm St., Riverside",
     projectId: "1d3f5a1c-8a9b-4c3b-93c9-d715849f1b3e",
-    projectDescription: "Installing solar panels for residential use.",
+    projectDescription: "Installation of a 5kW solar power system.",
     projectDateCreation: "2024-12-01T10:00:00Z",
     projectDateValidity: "2025-12-01T10:00:00Z",
   };

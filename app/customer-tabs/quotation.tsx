@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { ProjectInfo } from "@/constants/QuotationSampleData";
-import { MaterialIcons } from "@expo/vector-icons";
+import Table from "@/components/Table";
 
 const ClientProjectForm = () => {
   const formRef = useRef(null);
@@ -23,7 +23,7 @@ const ClientProjectForm = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white p-6">
+    <SafeAreaView className="flex-1 bg-white p-5">
       <TouchableOpacity
         className="absolute top-6 right-6 items-center"
         onPress={handleDownloadPdf}
@@ -34,8 +34,7 @@ const ClientProjectForm = () => {
 
       <ScrollView
         ref={formRef}
-        className="flex-1 mt-10 border border-gray-300 rounded-lg bg-gray-50"
-        contentContainerStyle={{ padding: 16 }}
+        className="flex-1 mt-10 border border-gray-300 rounded-lg bg-gray-50 p-3"
       >
         {/* Header */}
         <View className="flex-row justify-between items-center mb-5">
@@ -111,34 +110,9 @@ const ClientProjectForm = () => {
           </Text>
         </View>
 
-        {/* Payment Details */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-800 mb-3">
-            Payment Details
-          </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">Discount: </Text>10%
-          </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">VAT Rate: </Text>12%
-          </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">Payment Progress: </Text>50%
-          </Text>
-        </View>
-
-        {/* Project Progress */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-800 mb-3">
-            Project Progress
-          </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">Progress: </Text>75%
-          </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">Facilitator: </Text>
-            Richard Roe (richard@example.com)
-          </Text>
+        {/* Project Expense Table */}
+        <View>
+          <Table />
         </View>
 
         {/* Signature Section */}

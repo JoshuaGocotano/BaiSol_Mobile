@@ -24,7 +24,6 @@ const ClientProjectForm = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white p-6">
-      {/* Download Button */}
       <TouchableOpacity
         className="absolute top-6 right-6 items-center"
         onPress={handleDownloadPdf}
@@ -33,7 +32,6 @@ const ClientProjectForm = () => {
         <Text className="text-xs font-medium text-gray-700">Download</Text>
       </TouchableOpacity>
 
-      {/* Form Container */}
       <ScrollView
         ref={formRef}
         className="flex-1 mt-10 border border-gray-300 rounded-lg bg-gray-50"
@@ -80,15 +78,18 @@ const ClientProjectForm = () => {
         </View>
 
         {/* Customer Details */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-800">Customer</Text>
-          <Text className="text-lg font-bold text-gray-700">
+        <View className="mb-6 borderrounded-lg bg-white shadow-md">
+          <Text className="text-md font-semibold text-white bg-blue-500 p-2">
+            Customer
+          </Text>
+          {/* Customer Information */}
+          <Text className="text-lg font-bold text-gray-700 mt-2 ml-2">
             {ProjectInfo.customerName}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className="text-base text-gray-700 ml-2">
             {ProjectInfo.customerAddress}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className="text-base text-gray-700 ml-2 mb-2">
             {ProjectInfo.customerEmail}
           </Text>
         </View>

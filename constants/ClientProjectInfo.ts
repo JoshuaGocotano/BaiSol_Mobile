@@ -74,7 +74,7 @@ export const users: User[] = [
     gender: "Male",
     role: "Facilitator",
     address: "123 Main St, Springfield",
-    email: "gocotano.joshua02@gmail.com",
+    email: "markvalintin9@gmail.com",
     status: "On-Work",
   },
   {

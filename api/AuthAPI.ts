@@ -84,7 +84,7 @@ export const useLoginMutation = () => {
         }
         if (user.userRole == "Client") {
           router.push({
-            pathname: "/(client)/client-home",
+            pathname: "/(client)/projectIds",
           });
         }
       }

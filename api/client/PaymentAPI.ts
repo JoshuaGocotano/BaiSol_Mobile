@@ -18,15 +18,12 @@ interface IPayment {
   acknowledgedAt: string | null;
 }
 
-export const getClientPayments = () => {
-  const { data: client, isLoading } = getClientProjId();
-  if (isLoading) return { isLoading: true };
-
+export const getClientPayments = (projId: string) => {
   return useQuery<IPayment[], Error>({
-    queryKey: ["client-payment", client?.projId],
+    queryKey: ["client-payment", projId],
     queryFn: async () => {
       const response = await api.get("api/Payment/GetClientPayments", {
-        params: { projId: client?.projId },
+        params: { projId },
       });
       return response.data;
     },
@@ -34,16 +31,13 @@ export const getClientPayments = () => {
 };
 
 // get payment progress
-export const getPaymentProgress = () => {
-  const { data: client, isLoading } = getClientProjId();
-  if (isLoading) return { isLoading: true };
-
+export const getPaymentProgress = (projId: string) => {
   return useQuery<number, Error>({
-    queryKey: ["PaymentProgress", client?.projId],
+    queryKey: ["PaymentProgress", projId],
     queryFn: async () => {
       const response = await api.get("api/Payment/PaymentProgress", {
         params: {
-          projId: client?.projId,
+          projId: projId,
         },
       });
       return response.data;

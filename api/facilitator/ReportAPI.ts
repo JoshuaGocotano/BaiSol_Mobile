@@ -41,8 +41,6 @@ export const getTaskToUpdateProgress = (projId: string) => {
   });
 };
 
-
-
 export interface IProjectDateInto {
   startDate: string;
   endDate: string;
@@ -52,16 +50,13 @@ export interface IProjectDateInto {
   estimatedProjectDays: string;
 }
 
-export const getProjectDateInto = () => {
-  const { data: client, isLoading } = getClientProjId();
-  if (isLoading) return { isLoading: true };
-
+export const getProjectDateInto = (projId: string) => {
   return useQuery<IProjectDateInto, Error>({
-    queryKey: ["ProjectDateInto", client?.projId],
+    queryKey: ["ProjectDateInto", projId],
     queryFn: async () => {
       const response = await api.get("api/Gantt/ProjectDateInfo", {
         params: {
-          projId: client?.projId,
+          projId: projId,
         },
       });
       return response.data;
@@ -97,5 +92,3 @@ export const useUpdateTaskProgress = () => {
     },
   });
 };
-
-

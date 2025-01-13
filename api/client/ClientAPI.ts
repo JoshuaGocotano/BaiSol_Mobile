@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useClientUserEmail, useUserEmail } from "../Hooks/userHook";
 import { api } from "../AuthAPI";
+import Toast from "react-native-toast-message";
 
 interface IProjId {
   projId: string;
@@ -11,7 +12,7 @@ interface IProjId {
 // export const getClientProjId = (userEmail: string) => {
 export const getClientProjId = () => {
   const userEmail = useUserEmail();
-  return useQuery<IProjId, Error>({
+  return useQuery<IProjId[], Error>({
     queryKey: ["projId", userEmail],
     queryFn: async () => {
       const response = await api.get(`api/Client/GetClientProjectId`, {
@@ -51,18 +52,51 @@ export interface IClientProjectInfo {
 }
 
 // fetch client Info
-export const getClientProjectInfo = () => {
-  const { data: client, isLoading: projLoading } = getClientProjId();
-
-  if (projLoading) return { isLoading: true }; // Return loading state while projId is being fetched or is missing
-
-  return useQuery<IClientProjectInfo, Error>({
-    queryKey: ["client-Info", client?.projId],
+export const getClientProjectInfo = (projId?: string) =>
+  useQuery<IClientProjectInfo, Error>({
+    queryKey: ["client-Info", projId],
     queryFn: () =>
       api
         .get("api/Project/Get-Client-Info", {
-          params: { projId: client?.projId }, // Ensure projId is accessed properly
+          params: { projId },
         })
         .then((res) => res.data),
   });
-};
+
+  export const useApproveProjectQuotation = () => {
+    const user = useUserEmail();
+    return useMutation({
+      mutationFn: async (id: { projId: string }) => {
+        const { data } = await api.put(
+          "api/Client/ApproveProjectQuotation",
+          { ...id, userEmail: user },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        return data;
+      },
+      onError: (error: any) => {
+      Toast.show({ type: "error", text1: error.response.data });
+        
+      },
+    });
+  };
+  
+  // Check project status
+  export const getIsProjectApprovedQuotation = (projId: string) => {
+    return useQuery<boolean, Error>({
+      queryKey: ["IsProjectApprovedQuotation", projId],
+      queryFn: async () => {
+        const response = await api.get("api/Client/IsProjectApprovedQuotation", {
+          params: {
+            projId: projId,
+          },
+        });
+        return response.data;
+      },
+    });
+  };
+  

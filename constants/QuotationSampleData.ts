@@ -118,6 +118,6 @@ export const Projects = [
     projectId: "1d3f5a1c-8a9b-4c3b-93c9-d715849f1b3e",
     projectDescription: "Installation of a 5kW solar power system.",
     projectDateCreation: "2024-12-01T10:00:00Z",
-    projectDateValidity: "2025-12-01T10:00:00Z",
+    projectDateValidity: "2025-01-30T10:00:00Z",
   };
   

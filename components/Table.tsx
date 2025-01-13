@@ -20,7 +20,7 @@ const Table = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="mt-4">
+      <ScrollView className="">
         {/* Table Header */}
         <View className="flex-row justify-between bg-blue-500 p-2 rounded-t-md mb-2">
           <Text className="text-white text-md font-semibold">Description</Text>
@@ -46,7 +46,7 @@ const Table = () => {
             {ProjectExpense.totalMaterialCost.description}
           </Text>
           <Text className="text-gray-800">
-            ₱ {ProjectExpense.totalMaterialCost.lineTotal}
+            {formatMoney(ProjectExpense.totalMaterialCost.lineTotal)}
           </Text>
         </View>
         <View className="flex-row justify-between bg-gray-200 px-2">
@@ -54,7 +54,7 @@ const Table = () => {
             {ProjectExpense.totalLaborCost.description}
           </Text>
           <Text className="text-gray-800">
-            ₱ {ProjectExpense.totalLaborCost.lineTotal}
+            {formatMoney(ProjectExpense.totalLaborCost.lineTotal)}
           </Text>
         </View>
 
@@ -92,7 +92,9 @@ const Table = () => {
           </Text>
         </View>
         <View className="flex-row justify-between px-2 rounded-b-lg">
-          <Text className="text-md font-semibold">VAT</Text>
+          <Text className="text-md font-semibold">
+            VAT ({ProjectExpense.vatRate}%)
+          </Text>
           <Text className="text-md font-semibold">
             {formatMoney(ProjectExpense.vat)}
           </Text>

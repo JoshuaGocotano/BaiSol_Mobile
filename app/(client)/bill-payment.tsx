@@ -26,7 +26,7 @@ const BillPayment = () => {
   } = getClientPayments(projectId);
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#FF9C01" />;
+    return <ActivityIndicator size="large" className="text-orange-500" />;
   }
   const renderPayment = ({ item, index }: { item: Payment; index: number }) => {
     const {

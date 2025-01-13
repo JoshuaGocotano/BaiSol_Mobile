@@ -9,5 +9,6 @@ import path from "../assets/images/path.png";
 import logo from "../assets/images/bslogo.png";
 import logoSmall from "../assets/images/logo-small.png";
 import empty from "../assets/images/empty.png";
+import sunvoltage from "../assets/images/sunvoltage.jpg"
 
-export default { profile, thumbnail, card1, card2, card3, card4, card5, path, logo, logoSmall, empty };
+export default { sunvoltage, profile, thumbnail, card1, card2, card3, card4, card5, path, logo, logoSmall, empty };

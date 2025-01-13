@@ -16,8 +16,10 @@ import supply from "../assets/icons/supply.png";
 import customers from "../assets/icons/customers.png";
 import quotation from "../assets/icons/quotation.png";
 import bill from "../assets/icons/bill.png";
+import download from "../assets/icons/download_icon.png"
 
 export default {
+  download,
   bill,
   quotation,
   customers,

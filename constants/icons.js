@@ -17,6 +17,7 @@ import customers from "../assets/icons/customers.png";
 import quotation from "../assets/icons/quotation.png";
 import bill from "../assets/icons/bill.png";
 import download from "../assets/icons/download_icon.png"
+import request from "../assets/icons/interview.png";
 
 export default {
   download,
@@ -38,4 +39,5 @@ export default {
   logout,
   eyeHide,
   eye,
+  request,
 };

@@ -73,8 +73,9 @@ const TabsLayout: React.FC = () => {
 
   const tabs = [
     { name: "facilitator-home", title: "Home", icon: icons.home },
-    { name: "reports", title: "Reports", icon: icons.reports },
+    { name: "task", title: "Task", icon: icons.reports },
     { name: "supply", title: "Supply", icon: icons.supply },
+    { name: "request", title: "Request", icon: icons.request },
   ];
 
   const handleApproveQuotation = async () => {

@@ -1,30 +1,27 @@
+import { getAssignedProject } from "@/api/facilitator/FacilitatorAPI";
 import {
   getProjectDateInto,
   getTaskToUpdateProgress,
 } from "@/api/facilitator/ReportAPI";
 import TasksToUpdateProgress from "@/components/TasksToUpdateProgress";
-import { selectProjectId } from "@/redux/projectIdSlice";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
-import { useSelector } from "react-redux";
 
-const reports = () => {
-  const projectId = useSelector(selectProjectId);
-
-  const projectTaskToDos = getTaskToUpdateProgress(projectId!);
-
+const task = () => {
+  const { data: projId, isLoading: isLoadingId } = getAssignedProject();
+  const projectTaskToDos = getTaskToUpdateProgress(projId!);
   const {
     data: projInfo,
     isLoading,
     refetch: refetchDateInfo,
-  } = getProjectDateInto(projectId!);
+  } = getProjectDateInto(projId!);
 
-  if (isLoading || projectTaskToDos.isLoading)
-    return <ActivityIndicator size="large" />;
+  if (isLoadingId || isLoading || projectTaskToDos.isLoading)
+    return <ActivityIndicator className="bg-orange-500" />;
 
   return (
     <View>
-      {projectId}
+      {" "}
       <TasksToUpdateProgress
         taskToDo={projectTaskToDos.data!}
         refetch={projectTaskToDos.refetch}
@@ -35,4 +32,4 @@ const reports = () => {
   );
 };
 
-export default reports;
+export default task;

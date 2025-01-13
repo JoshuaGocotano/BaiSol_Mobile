@@ -28,6 +28,7 @@ const Supply = () => {
     isLoading: requestsLoading,
     error: requestsError,
   } = getRequestsByProj();
+  
   const {
     data: materials,
     isLoading: materialsLoading,

@@ -1,5 +1,5 @@
 import { icons } from "@/constants";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,10 +12,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import { ProjectInfo } from "@/constants/QuotationSampleData";
 import Table from "@/components/Table";
+import TermsAndConditionsModal from "@/components/TermsAndCondition";
 
 const ClientProjectForm = () => {
   const formRef = useRef(null);
   const colorScheme = useColorScheme();
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => setModalVisible(true);
+
+  const closeModal = () => setModalVisible(false);
 
   const handleDownloadPdf = async () => {
     alert("PDF generation is not yet implemented.");
@@ -23,14 +30,22 @@ const ClientProjectForm = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white p-5">
-      {/* Download Button */}
-      <TouchableOpacity
-        className="absolute top-6 right-6 items-center"
-        onPress={handleDownloadPdf}
-      >
-        <Image source={icons.download} className="w-10 h-10" />
-        <Text className="text-xs font-medium text-gray-700">Download</Text>
-      </TouchableOpacity>
+      {/* Approve and Download Buttons */}
+      <View className="absolute top-6 right-6 flex-row items-center space-x-4">
+        {/* Approve Button */}
+        <TouchableOpacity
+          className="items-center bg-orange-500 px-3 py-2 rounded-lg"
+          onPress={openModal}
+        >
+          <Text className="text-xs font-medium text-white">Approve</Text>
+        </TouchableOpacity>
+
+        {/* Download Button */}
+        <TouchableOpacity className="items-center" onPress={handleDownloadPdf}>
+          <Image source={icons.download} className="w-10 h-10" />
+          <Text className="text-xs font-medium text-gray-700">Download</Text>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
         ref={formRef}
@@ -164,6 +179,7 @@ const ClientProjectForm = () => {
           </Text>
         </View>
       </ScrollView>
+      <TermsAndConditionsModal isVisible={isModalVisible} onClose={closeModal} />
     </SafeAreaView>
   );
 };

@@ -86,6 +86,9 @@ const ClientProjectForm = () => {
           <Text className="text-lg font-bold text-gray-700 mt-2 ml-2">
             {ProjectInfo.customerName}
           </Text>
+          <Text className="text-sm font-bold text-gray-600 ml-2">
+            ID: <Text className="font-normal">{ProjectInfo.customerId}</Text>
+          </Text>
           <Text className="text-base text-gray-700 ml-2">
             {ProjectInfo.customerAddress}
           </Text>
@@ -95,14 +98,16 @@ const ClientProjectForm = () => {
         </View>
 
         {/* Project Details */}
-        <View className="mb-6">
-          <Text className="text-lg font-semibold text-gray-800 mb-3">
-            Project Details
+        <View className="mb-6 borderrounded-lg bg-white shadow-md">
+          <Text className="text-md font-semibold text-white bg-blue-500 p-2">
+            Project
           </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-bold">Description: </Text>
-            Installation of a 5kW HYBRID SYSTEM solar power system for
-            residential use.
+          <Text className="text-base text-gray-700 p-2">
+            {ProjectInfo.projectDescription}
+          </Text>
+          <Text className="text-sm font-bold text-gray-600 p-2">
+            Quotation #:{" "}
+            <Text className="font-normal">{ProjectInfo.projectId}</Text>
           </Text>
         </View>
 

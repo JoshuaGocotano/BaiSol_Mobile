@@ -13,6 +13,7 @@ import { users } from "../../constants/SampleData";
 import { useAuth } from "../auth-context";
 import { images, icons } from "@/constants";
 import { router } from "expo-router";
+import { ClientProjectInfo } from "@/constants/QuotationSampleData";
 
 const Profile = () => {
   const { email, setEmail } = useAuth();
@@ -27,9 +28,10 @@ const Profile = () => {
     textPrimary: scheme === "dark" ? "text-white" : "text-[#555555]",
     textSecondary: scheme === "dark" ? "text-[#B0B0B0]" : "text-[#555555]",
     cardBackground: scheme === "dark" ? "bg-[#232533]" : "bg-white",
-    statusActive: "bg-green-500",
+    statusOnGoing: "bg-green-500",
     statusOnWork: "bg-orange-400",
-    statusInactive: "bg-red-500",
+    statusOnProcess: "bg-red-500",
+    statusFinished: "bg-blue-500",
   };
 
   const logout = () => {
@@ -77,7 +79,7 @@ const Profile = () => {
             </View>
 
             <Text className={`text-2xl font-bold ${styles.textPrimary}`}>
-              {user.name}
+              {ClientProjectInfo.clientFName} {ClientProjectInfo.clientLName}
             </Text>
 
             <View className="flex-row items-center">
@@ -88,11 +90,12 @@ const Profile = () => {
               </Text>
               <View
                 className={`ml-2 w-3 h-3 rounded-full ${
-                  user.status === "Active"
-                    ? styles.statusActive
-                    : user.status === "On-Work"
-                    ? styles.statusOnWork
-                    : styles.statusInactive
+                  {
+                    OnGoing: styles.statusOnGoing,
+                    Finished: styles.statusFinished,
+                    OnWork: styles.statusOnWork,
+                    OnProcess: styles.statusOnProcess,
+                  }[ClientProjectInfo.status] || ""
                 }`}
               />
             </View>
@@ -108,11 +111,11 @@ const Profile = () => {
           </Text>
 
           {[
-            { label: "Age", value: user.age },
-            { label: "Gender", value: user.gender },
-            { label: "Address", value: user.address },
-            { label: "Email", value: user.email },
-            { label: "Status", value: user.status },
+            { label: "Gender", value: ClientProjectInfo.sex },
+            { label: "Address", value: ClientProjectInfo.clientAddress },
+            { label: "Phone", value: ClientProjectInfo.clientContactNum },
+            { label: "Project Status", value: ClientProjectInfo.status },
+            { label: "System Type", value: ClientProjectInfo.systemType },
           ].map((item, index) => (
             <View
               key={index}

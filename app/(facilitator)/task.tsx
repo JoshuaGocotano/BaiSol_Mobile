@@ -21,7 +21,6 @@ const task = () => {
 
   return (
     <View>
-      {" "}
       <TasksToUpdateProgress
         taskToDo={projectTaskToDos.data!}
         refetch={projectTaskToDos.refetch}

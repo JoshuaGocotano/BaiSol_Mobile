@@ -179,13 +179,13 @@ const Supply = () => {
         Supplies
       </Text>
 
-      <FlatList
+      {/* <FlatList
         data={requests}
         keyExtractor={(item) => `request-${item.reqId}`}
         renderItem={renderSupplyItem}
         ListHeaderComponent={renderHeader}
         className="mb-6"
-      />
+      /> */}
 
       {/* Displaying Assigned Materials */}
       <Text className={`text-2xl font-bold text-primary mb-4`}>
@@ -231,7 +231,7 @@ const Supply = () => {
         )}
       />
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={openModal}
         className={`flex-row items-center justify-between px-4 py-3 rounded-md ${styles.buttonBackground}`}
       >
@@ -239,9 +239,9 @@ const Supply = () => {
           Request a supply?
         </Text>
         <Ionicons name="arrow-forward" size={20} color={styles.iconColor} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <RequestSupply isVisible={isModalVisible} onClose={closeModal} />
+      {/* <RequestSupply isVisible={isModalVisible} onClose={closeModal} /> */}
     </SafeAreaView>
   );
 };

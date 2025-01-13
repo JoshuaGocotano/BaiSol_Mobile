@@ -4,107 +4,143 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  TextInput,
   Modal,
+  TextInput,
   Button,
-  useColorScheme,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
+import { getAssignedProject } from "@/api/facilitator/AssignedProject";
+import {
+  getRequestMaterialSupplies,
+  getRequestsByProj,
+  IRequestDetail,
+  IRequestSupply,
+  useAcknowledgeRequest,
+  useDeleteRequest,
+  useRequestSupply,
+} from "@/api/facilitator/RequestSupplyAPI";
 
-// Define the IEquipmentDetails interface
-interface IEquipmentDetails {
-  suppId: number;
-  eqptCode: string;
-  eqptDescript: string;
-  quantity: number;
-  eqptUnit: string;
-}
-
-// Define the IAssignedEquipment interface
-export interface IAssignedEquipment {
-  eqptCategory: string;
-  details?: IEquipmentDetails[];
-}
-
-const scheme = useColorScheme();
+// The styles object (you can replace this with your actual styles)
 const styles = {
-  background: scheme === "dark" ? "bg-[#161622]" : "bg-white",
-  textPrimary: scheme === "dark" ? "text-white" : "text-gray-900",
-  textSecondary: scheme === "dark" ? "text-[#B0B0B0]" : "text-gray-600",
-  cardBackground: scheme === "dark" ? "bg-[#232533]" : "bg-gray-100",
-  headerBackground: scheme === "dark" ? "bg-[#333333]" : "bg-gray-200",
-  buttonBackground: scheme === "dark" ? "bg-secondary-100" : "bg-black",
-  buttonText: scheme === "dark" ? "text-white" : "text-white",
-  iconColor: "white",
+  textPrimary: "text-gray-900", // Primary text color
+  textSecondary: "text-gray-600", // Secondary text color
+  cardBackground: "bg-gray-100", // Background for card
+  headerBackground: "bg-gray-200", // Header background color
 };
 
-const sampleAssignedEquipment: IAssignedEquipment[] = [
+export interface IAllRequest {
+  reqId: number;
+  submittedAt: string;
+  reviewedAt: string;
+  status: string;
+  quantityRequested: number;
+  requestSupply: string;
+  projectName: string;
+  supplyCategory: string;
+  submittedBy: string;
+  reviewedBy: string;
+}
+
+const allRequests: IAllRequest[] = [
   {
-    eqptCategory: "Hand Tools",
-    details: [
-      {
-        suppId: 1,
-        eqptCode: "EQ-001",
-        eqptDescript: "Hammer",
-        quantity: 3,
-        eqptUnit: "Units",
-      },
-    ],
+    reqId: 1,
+    submittedAt: "2025-01-10T09:15:00Z",
+    reviewedAt: "2025-01-11T14:30:00Z",
+    status: "OnReview",
+    quantityRequested: 100,
+    requestSupply: "Steel Beams",
+    projectName: "Bridge Construction Project",
+    supplyCategory: "Construction Materials",
+    submittedBy: "John Doe",
+    reviewedBy: "Jane Smith",
   },
   {
-    eqptCategory: "Electronic Tools",
-    details: [
-      {
-        suppId: 3,
-        eqptCode: "EQ-003",
-        eqptDescript: "Multimeter",
-        quantity: 5,
-        eqptUnit: "Units",
-      },
-    ],
+    reqId: 2,
+    submittedAt: "2025-01-08T16:45:00Z",
+    reviewedAt: "2025-01-09T10:20:00Z",
+    status: "OnReview",
+    quantityRequested: 50,
+    requestSupply: "Wiring Cables",
+    projectName: "Office Renovation",
+    supplyCategory: "Electrical Supplies",
+    submittedBy: "Alice Johnson",
+    reviewedBy: "Mark Taylor",
+  },
+  {
+    reqId: 3,
+    submittedAt: "2025-01-12T11:00:00Z",
+    reviewedAt: "2025-01-13T09:00:00Z",
+    status: "OnReview",
+    quantityRequested: 0,
+    requestSupply: "Cement Bags",
+    projectName: "Road Expansion Project",
+    supplyCategory: "Construction Materials",
+    submittedBy: "Michael Green",
+    reviewedBy: "Sarah Brown",
+  },
+  {
+    reqId: 4,
+    submittedAt: "2025-01-12T11:00:00Z",
+    reviewedAt: "2025-01-13T09:00:00Z",
+    status: "Approved",
+    quantityRequested: 60,
+    requestSupply: "Cement Bags",
+    projectName: "Road Expansion Project",
+    supplyCategory: "Construction Materials",
+    submittedBy: "Michael Green",
+    reviewedBy: "Sarah Brown",
   },
 ];
 
-const RequestSupply: React.FC<{
+const RequestSupply = ({
+  isVisible,
+  onClose,
+  refetch,
+}: {
   isVisible: boolean;
   onClose: () => void;
-  onSubmit: (equipment: IEquipmentDetails, quantity: string) => void;
-}> = ({ isVisible, onClose, onSubmit }) => {
+  refetch: () => void;
+}) => {
   const [form, setForm] = useState({ supplyName: "", quantity: "" });
 
-  // Combine equipment details to populate the supply options in the dropdown
-  const equipmentOptions = sampleAssignedEquipment.flatMap(
-    (category) =>
-      category.details?.map((item) => ({
-        label: `${item.eqptDescript} (${item.eqptCode})`,
-        value: item.eqptCode,
-      })) || []
-  );
+  const {
+    data: supplies,
+    isLoading,
+    refetch: refetchSupplies,
+  } = getRequestMaterialSupplies();
+  const sendRequest = useRequestSupply();
 
   const handleSubmit = () => {
     if (form.supplyName && form.quantity) {
-      // Find the selected equipment
-      const selectedEquipment = sampleAssignedEquipment
-        .flatMap((category) => category.details || [])
-        .find((item) => item.eqptCode === form.supplyName);
+      const requestDetails: IRequestDetail[] = [
+        {
+          quantityRequested: parseInt(form.quantity, 10),
+          suppId: parseInt(form.supplyName, 10), // supplyName holds the suppId
+        },
+      ];
 
-      if (selectedEquipment) {
-        // Call the onSubmit handler and pass the selected equipment and quantity
-        onSubmit(selectedEquipment, form.quantity);
+      const requestData: IRequestSupply = {
+        requestDetails,
+      };
 
-        Toast.show({
-          text1: "Request Submitted Successfully",
-          text2: `You requested ${form.quantity} of ${form.supplyName}`,
-          type: "success",
-          position: "top",
-        });
-
-        setForm({ supplyName: "", quantity: "" });
-        onClose();
-      }
+      sendRequest.mutateAsync(requestData, {
+        onSuccess: (data) => {
+          Toast.show({
+            text1: "Requested Successfully",
+            text2: data,
+            type: "success",
+            position: "top",
+          });
+          onClose();
+          refetch();
+          refetchSupplies();
+          setForm({ supplyName: "", quantity: "" });
+        },
+      });
     } else {
       alert("Please fill in both fields!");
     }
@@ -117,11 +153,12 @@ const RequestSupply: React.FC<{
       transparent={true}
       animationType="slide"
     >
-      <SafeAreaView className="flex-1 justify-center items-center bg-black/50">
+      <SafeAreaView className="flex-1 justify-center items-center">
         <View className="bg-white p-5 rounded-lg w-4/5 max-w-md">
           <Text className="text-xl font-bold mb-4 text-center">
             Request a Supply
           </Text>
+
           <Text className="text-sm font-semibold mb-2">Supply Name</Text>
           <Picker
             selectedValue={form.supplyName}
@@ -130,14 +167,10 @@ const RequestSupply: React.FC<{
             }
             style={{ height: 50, width: "100%" }}
           >
-            <Picker.Item label="Select Equipment" value="" />
-            {equipmentOptions.map((option) => (
-              <Picker.Item
-                key={option.value}
-                label={option.label}
-                value={option.value}
-              />
+            {supplies?.map((supply) => (
+              <Picker.Item label={supply.supplyName} value={supply.suppId} />
             ))}
+            {/* Add your equipment options here */}
           </Picker>
 
           <Text className="text-sm font-semibold mb-2 mt-4">Quantity</Text>
@@ -165,148 +198,161 @@ const RequestSupply: React.FC<{
 
 const Request = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [requestedEquipment, setRequestedEquipment] = useState<
-    {
-      eqptCode: string;
-      eqptDescript: string;
-      quantity: string;
-      status: string;
-    }[]
-  >([]);
+  const [requests, setRequests] = useState<IAllRequest[]>(allRequests);
+  const { data: requestsData, isLoading, refetch } = getRequestsByProj();
+
+  const deleteRequest = useDeleteRequest();
+  const acknowledgeRequest = useAcknowledgeRequest();
 
   const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
 
-  const handleSubmitRequest = (
-    equipment: IEquipmentDetails,
-    quantity: string
-  ) => {
-    // Add the new request with "Pending" status
-    setRequestedEquipment((prevState) => [
-      ...prevState,
+  const handleEllipsisPress = (reqId: number) => {
+    Alert.alert("Choose an action", "", [
+      { text: "Cancel", style: "cancel" },
       {
-        eqptCode: equipment.eqptCode,
-        eqptDescript: equipment.eqptDescript,
-        quantity,
-        status: "Pending", // Set initial status to "Pending"
+        text: "Delete",
+        onPress: () => {
+          deleteRequest.mutateAsync(
+            { reqId: reqId },
+            {
+              onSuccess: (data) => {
+                Toast.show({
+                  text1: "Request Deleted",
+                  text2: data,
+                  type: "info",
+                  position: "top",
+                });
+                refetch();
+              },
+              onError: (error) => {
+                Toast.show({
+                  text1: "Error",
+                  text2: error.message || "Something went wrong",
+                  type: "error",
+                  position: "top",
+                });
+              },
+            }
+          );
+        },
+        style: "destructive",
+      },
+      {
+        text: "Acknowledge",
+        style: "default",
+        onPress: () => {
+          acknowledgeRequest.mutateAsync(
+            { reqId: [reqId] }, // Assuming the API expects an array
+            {
+              onSuccess: (data: any) => {
+                Toast.show({
+                  text1: "Request Acknowledged",
+                  text2: data,
+                  type: "success",
+                  position: "top",
+                });
+                refetch();
+              },
+              onError: (error) => {
+                Toast.show({
+                  text1: "Error",
+                  text2: error.message || "Something went wrong",
+                  type: "error",
+                  position: "top",
+                });
+              },
+            }
+          );
+        },
       },
     ]);
   };
 
-  // const handleApproveRequest = (eqptCode: string) => {
-  //   setRequestedEquipment((prevState) =>
-  //     prevState.map((item) =>
-  //       item.eqptCode === eqptCode ? { ...item, status: "Approved" } : item
-  //     )
-  //   );
-
-  //   Toast.show({
-  //     text1: "Request Approved",
-  //     text2: `The request for ${eqptCode} has been approved.`,
-  //     type: "success",
-  //     position: "top",
-  //   });
-  // };
-
-  const renderRequestedEquipment = () => {
-    if (requestedEquipment.length === 0) return null;
-
-    return (
-      <View className="mt-4">
-        <Text className="text-xl font-semibold text-gray-900">
-          Your Requested Equipment:
-        </Text>
-        <FlatList
-          data={requestedEquipment}
-          keyExtractor={(item) => item.eqptCode}
-          renderItem={({ item }) => (
-            <View className="flex-row items-center justify-between p-4 mb-2 rounded-lg shadow-sm bg-gray-100 border-b">
-              <Text className="text-base text-gray-900 flex-1">
-                {item.eqptCode}
-              </Text>
-              <Text className="text-base text-gray-900 flex-1">
-                {item.eqptDescript}
-              </Text>
-              <Text className="text-sm text-gray-600 flex-1 text-center">
-                {item.quantity}
-              </Text>
-              <Text
-                className={`text-sm flex-1 text-center ${
-                  item.status === "Approved"
-                    ? "text-green-600"
-                    : "text-yellow-600"
-                }`}
-              >
-                {item.status}
-              </Text>
-              {/* <TouchableOpacity
-                onPress={() => handleApproveRequest(item.eqptCode)}
-                disabled={item.status === "Approved"}
-                className="p-2 bg-green-500 rounded text-white"
-              >
-                <Text className="text-white">Approve</Text>
-              </TouchableOpacity> */}
-            </View>
-          )}
-        />
-      </View>
-    );
-  };
-
-  return (
-    <SafeAreaView className="flex-1 bg-white p-4">
-      <Text className="text-3xl font-extrabold mb-5 text-gray-900">
-        Equipment Requests
+  const renderRequestItem = ({ item }: { item: IAllRequest }) => (
+    <View
+      className={`flex-row items-center justify-between p-4 ${styles.cardBackground} mb-2 rounded-lg shadow-sm`}
+    >
+      <Text className={`text-base ${styles.textPrimary} flex-1`}>
+        {item.requestSupply}
+      </Text>
+      <Text className={`text-base ${styles.textPrimary} flex-1`}>
+        {item.projectName}
+      </Text>
+      <Text className={`text-sm ${styles.textSecondary} flex-1 text-center`}>
+        {item.status}
+      </Text>
+      <Text className={`text-sm ${styles.textSecondary} flex-1 text-center`}>
+        {item.quantityRequested}
       </Text>
 
-      {sampleAssignedEquipment.map((category) => (
-        <View key={category.eqptCategory} className="mb-4">
-          <View className="bg-gray-200 p-4 rounded-lg mb-4 shadow-sm">
-            <Text className="text-xl font-semibold text-gray-900">
-              {category.eqptCategory}
+      <TouchableOpacity
+        onPress={() => handleEllipsisPress(item.reqId)}
+        className="ml-2 p-2 bg-gray-200 rounded-full"
+      >
+        <Ionicons name="ellipsis-vertical" size={20} color="black" />
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <View className={`p-4 ${styles.headerBackground}`}>
+        <Text className={`text-3xl font-extrabold ${styles.textPrimary}`}>
+          Equipment Requests
+        </Text>
+      </View>
+
+      <FlatList
+        data={requestsData}
+        keyExtractor={(item) => item.reqId.toString()}
+        renderItem={renderRequestItem}
+        ListHeaderComponent={() => (
+          <View className="flex-row justify-between p-4 bg-gray-200 mb-2">
+            <Text
+              className={`text-base ${styles.textPrimary} text-center flex-1`}
+            >
+              Supply
+            </Text>
+            <Text
+              className={`text-base ${styles.textPrimary} text-center flex-1`}
+            >
+              Project
+            </Text>
+            <Text
+              className={`text-base ${styles.textPrimary} text-center flex-1`}
+            >
+              Status
+            </Text>
+            <Text
+              className={`text-base ${styles.textPrimary} text-center flex-1`}
+            >
+              Quantity
+            </Text>
+            <Text
+              className={`text-base ${styles.textPrimary} text-center flex-1`}
+            >
+              Action
             </Text>
           </View>
-          <FlatList
-            data={category.details}
-            keyExtractor={(item) => item.eqptCode}
-            renderItem={({ item }) => (
-              <View className="flex-row items-center justify-between p-4 mb-2 rounded-lg shadow-sm bg-gray-100 border-b">
-                <Text className="text-base text-gray-900 flex-1">
-                  {item.eqptCode}
-                </Text>
-                <Text className="text-base text-gray-900 flex-1">
-                  {item.eqptDescript}
-                </Text>
-                <Text className="text-sm text-gray-600 flex-1 text-center">
-                  {item.eqptUnit}
-                </Text>
-                <Text className="text-sm text-gray-600 flex-1 text-center">
-                  {item.quantity}
-                </Text>
-              </View>
-            )}
-            className="mb-4"
-          />
-        </View>
-      ))}
+        )}
+      />
 
       <TouchableOpacity
         onPress={openModal}
-        className={`flex-row items-center justify-between px-4 py-3 rounded-md ${styles.buttonBackground}`}
+        className="flex-row items-center justify-between px-4 py-3 rounded-md bg-black"
       >
-        <Text className={`text-md font-semibold ${styles.buttonText}`}>
+        <Text className="text-md font-semibold text-white">
           Request a supply?
         </Text>
-        <Ionicons name="arrow-forward" size={20} color={styles.iconColor} />
+        <Ionicons name="arrow-forward" size={20} color="white" />
       </TouchableOpacity>
 
       <RequestSupply
+        refetch={refetch}
         isVisible={isModalVisible}
         onClose={closeModal}
-        onSubmit={handleSubmitRequest}
       />
-
-      {renderRequestedEquipment()}
     </SafeAreaView>
   );
 };

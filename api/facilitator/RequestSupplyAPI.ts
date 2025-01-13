@@ -82,3 +82,57 @@ export const useDeleteRequest = () => {
     },
   });
 };
+
+interface IRequestSupplies {
+  suppId: number;
+  supplyName: string;
+}
+
+export const getRequestMaterialSupplies = () => {
+  const userEmail = useUserEmail();
+  return useQuery<IRequestSupplies[], Error>({
+    queryKey: ["request-material-supplies"],
+    queryFn: async () => {
+      const response = await api.get("api/Facilitator/RequestSupplies", {
+        params: {
+          userEmail: userEmail,
+          supplyCtgry: "Equipment",
+        },
+      });
+      return response.data;
+    },
+  });
+};
+
+export interface IRequestSupply {
+  requestDetails: IRequestDetail[];
+}
+export interface IRequestDetail {
+  quantityRequested: number;
+  suppId: number;
+}
+
+export const useRequestSupply = () => {
+  const userEmail = useUserEmail();
+  return useMutation({
+    mutationFn: async (formData: IRequestSupply) => {
+      const response = await api.post(
+        "api/Requisition/RequestSupply",
+        {
+          ...formData,
+          submittedBy: userEmail,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    },
+    onError: (error: any) => {
+      Toast.show({ type: "error", text1: error.response.data });
+      console.error("Error request supply:", error);
+    },
+  });
+};
